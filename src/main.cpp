@@ -30,12 +30,14 @@ string hasData(string s) {
   }
   return "";
 }
-
+#define P_GAIN 1
+#define I_GAIN 0.06
+#define D_GAIN 13
 int main() {
   uWS::Hub h;
 
   PID pid;
-  pid.Init(1, 0.04, 16);
+  pid.Init(P_GAIN, I_GAIN, D_GAIN);
 
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
@@ -62,13 +64,19 @@ int main() {
            * NOTE: Feel free to play around with the throttle and speed.
            *   Maybe use another PID controller to control the speed!
            */
-          pid.UpdateError(cte);
-          pid.gain_contribution();
-          steer_value = pid.TotalError();
+          if (speed < 20) {
+            pid.Kp = 2 * P_GAIN;
+            pid.Ki = I_GAIN / 2;
+          } else {
+            pid.Kp = P_GAIN;
+            pid.Ki = I_GAIN;
+          }
+          steer_value = pid.TotalError(cte, true);
           steer_value = fmin(steer_value, 1);
           steer_value = fmax(steer_value, -1);
 
           // DEBUG
+          std::cout << "Speed: " << speed << std::endl;
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value
                     << std::endl;
           std::cout << "------" << std::endl;

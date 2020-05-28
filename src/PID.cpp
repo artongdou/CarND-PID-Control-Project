@@ -21,35 +21,40 @@ void PID::Init(double Kp_, double Ki_, double Kd_) {
   Kp = Kp_;
   Ki = Ki_;
   Kd = Kd_;
+  I = 0.0;
+  saturation = 0.0;
+  K_windup = 1;
 }
 
-void PID::UpdateError(double cte) {
-  /**
-   * Update PID errors based on cte.
-   */
-  d_error = -cte - p_error;
-  p_error = -cte;
-  i_error += -cte;
-}
-
-double PID::TotalError() {
+double PID::TotalError(double cte, bool debug) {
   /**
    * Calculate and return the total error
    */
-  return Kp * p_error + Kd * d_error +
-         Ki * i_error;  // TODO: Add your total error calc here!
-}
+  double u;
 
-vector<double> PID::gain_contribution() {
-  vector<double> result;
-  double total_err = TotalError();
-  result.push_back(Kp * p_error / total_err);
-  result.push_back(Ki * i_error / total_err);
-  result.push_back(Kd * d_error / total_err);
+  P = Kp * (-cte);
+  I += Ki * (-cte) - K_windup * saturation;
+  D = Kd * (-cte - prev_error);
+  prev_error = -cte;
 
-  for (int i = 0; i < result.size(); ++i) {
-    cout << i << ": " << result[i] << endl;
+  if (debug) {
+    cout << "P: " << P << endl;
+    cout << "I: " << I << endl;
+    cout << "D: " << D << endl;
   }
 
-  return result;
+  u = P + I + D;
+  saturation = u - saturate(u, -1, 1);
+
+  return (u);
+}
+
+double PID::saturate(double input, double lower, double upper) {
+  if (input > upper) {
+    return upper;
+  } else if (input < lower) {
+    return lower;
+  } else {
+    return input;
+  }
 }

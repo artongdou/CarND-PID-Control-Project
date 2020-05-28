@@ -22,25 +22,14 @@ class PID {
   void Init(double Kp_, double Ki_, double Kd_);
 
   /**
-   * Update the PID error variables given cross track error.
-   * @param cte The current cross track error
-   */
-  void UpdateError(double cte);
-
-  /**
    * Calculate the total PID error.
+   * @param cte The current cross track error
+   * @param debug
    * @output The total PID error
    */
-  double TotalError();
-  std::vector<double> gain_contribution();
+  double TotalError(double cte, bool debug);
 
- private:
-  /**
-   * PID Errors
-   */
-  double p_error;
-  double i_error;
-  double d_error;
+  double saturate(double input, double lower, double upper);
 
   /**
    * PID Coefficients
@@ -48,6 +37,17 @@ class PID {
   double Kp;
   double Ki;
   double Kd;
+  double K_windup;
+
+ private:
+  /**
+   * PID Errors
+   */
+  double prev_error;
+  double P;
+  double I;
+  double D;
+  double saturation;
 };
 
 #endif  // PID_H
