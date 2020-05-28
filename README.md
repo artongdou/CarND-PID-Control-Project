@@ -59,6 +59,9 @@ More information is only accessible by people who are already enrolled in Term 2
 of CarND. If you are enrolled, see [the project page](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/f1820894-8322-4bb3-81aa-b26b3c6dcbaf/lessons/e8235395-22dd-4b87-88e0-d108c5e5bbf4/concepts/6a4d8d42-6a04-4aa6-b284-1697c0fd6562)
 for instructions and the project rubric.
 
+## PID Tuning
+I chose manual tuning for this project. I start with a P controller alone, which after a few trial it's not possible to drive the car around the track. It's observed that the vehicle will oscillate in straight line and go out of control at turn. One way to solve this is to add in D controller. I started with `Kd = 1` and no improvements are made. Member funtion `gain_contribution` to print out the contribution of P and D controller. Then it is obvious the D gain is too low. Setting `Kd = 10` results in good performance in straight line and mild turn. However it is still unstable during sharp turn. This is due to PD controller is not capable of controls the steering angle to a fixed value due to its nature. So I controller has to be added in to go through sharp turn. By setting `Ki = 1`, the car becomes unstable again, which is due to the slow response of the vehicle and the accumulated error will become too large quickly. Therefore, setting `Ki = 0.04` does a good job of keep the vehicle on track. Since we added in I controller, it's common that `Kd` has to be adjusted. Since we have extra input from the I controller, increasing `Kd` would help improve the settling time. Finally, `Kp = 1` `Ki = 0.04` `Kd = 16` yields the highest performance.
+
 ## Hints!
 
 * You don't have to follow this directory structure, but if you do, your work
