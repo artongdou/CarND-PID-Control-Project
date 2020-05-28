@@ -1,6 +1,8 @@
 #ifndef PID_H
 #define PID_H
 
+#include <vector>
+
 class PID {
  public:
   /**
@@ -30,6 +32,7 @@ class PID {
    * @output The total PID error
    */
   double TotalError();
+  std::vector<double> gain_contribution();
 
  private:
   /**
@@ -41,7 +44,7 @@ class PID {
 
   /**
    * PID Coefficients
-   */ 
+   */
   double Kp;
   double Ki;
   double Kd;
