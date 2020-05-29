@@ -30,9 +30,9 @@ string hasData(string s) {
   }
   return "";
 }
-#define P_GAIN 1
-#define I_GAIN 0.06
-#define D_GAIN 13
+#define P_GAIN 1.5
+#define I_GAIN 0.07
+#define D_GAIN 18
 int main() {
   uWS::Hub h;
 
